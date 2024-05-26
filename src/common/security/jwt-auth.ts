@@ -2,14 +2,14 @@ import { Reflector } from '@nestjs/core';
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { USER_TYPE } from '@/user/entity/user.entity';
 import { Auths } from '@/common/decorator/rest-api';
+import { Unauthorized } from '@/auth/exception/auth.exception';
 
 @Injectable()
-export class JwtAuthAndRoleGuard implements CanActivate {
+export class JwtAuth implements CanActivate {
   constructor(private readonly reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
     const auths = this.reflector.get(Auths, context.getHandler());
-
     if (!auths) {
       return true;
     }
@@ -22,6 +22,6 @@ export class JwtAuthAndRoleGuard implements CanActivate {
       if (auths.includes(user.type)) return true;
     }
 
-    throw new Error();
+    throw new Unauthorized();
   }
 }

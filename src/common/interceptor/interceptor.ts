@@ -2,25 +2,24 @@ import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nes
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-interface Response<T> {
+export interface CommonResponse<T> {
   code: string;
   message: string | null;
-  item: T;
+  item: T | null;
 }
 
 @Injectable()
-export class ResponseInterceptor<T> implements NestInterceptor<T, Response<T>> {
-  intercept(_: ExecutionContext, next: CallHandler<T>): Observable<Response<T>> {
+export class ResponseInterceptor<T> implements NestInterceptor<T, CommonResponse<T>> {
+  intercept(_: ExecutionContext, next: CallHandler<T>): Observable<CommonResponse<T>> {
     return next.handle().pipe(
       map(item => {
-        // const response = context.switchToHttp().getResponse();
         const code = 'OK';
         const message = null;
 
         return {
           code,
           message,
-          item,
+          item: item ?? null,
         };
       }),
     );

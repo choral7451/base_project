@@ -7,10 +7,30 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const status = exception.getStatus();
+    const exceptionContents = exception.getResponse();
+
+    let code = 'ERROR';
+    let message = '';
+
+    if (typeof exceptionContents === 'string') {
+      message = exceptionContents;
+    } else if (typeof exceptionContents === 'object') {
+      if (exceptionContents.hasOwnProperty('message')) {
+        message = exceptionContents['message'];
+
+        if (Array.isArray(exceptionContents['message'])) {
+          code = 'BAD_REQUEST';
+        }
+      }
+
+      if (exceptionContents.hasOwnProperty('code')) {
+        code = exceptionContents['code'];
+      }
+    }
 
     response.status(status).json({
-      code: status,
-      message: exception.getResponse(),
+      code: code,
+      message: message,
     });
   }
 }

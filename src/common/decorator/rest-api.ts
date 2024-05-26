@@ -1,7 +1,8 @@
-import { applyDecorators, Controller, Get, Type } from '@nestjs/common';
-import { ApiOkResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { applyDecorators, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Reflector } from '@nestjs/core';
 import { USER_TYPE } from '@/user/entity/user.entity';
+import { JwtAuthGuard } from '@/common/security/jwt-auth.guard';
 
 interface HttpMethodOption {
   path: string;
@@ -13,33 +14,36 @@ export function RestApiController(prefix: string, apiTags: string): ClassDecorat
   return applyDecorators(Controller(prefix), ApiTags(apiTags));
 }
 
-export function RestApiGet<T extends new (...args: any[]) => any>(
-  okResponseType: T,
-  { path, description }: HttpMethodOption,
-  exceptions?: Type<any>[],
-): MethodDecorator {
+export function RestApiGet<T extends new (...args: any[]) => any>(response: T, { path, description, auth }: HttpMethodOption): MethodDecorator {
   const decorators = [
     Get(path),
     ApiOperation({ summary: description }),
     ApiOkResponse({
-      type: okResponseType,
+      type: response,
     }),
   ];
 
-  if (exceptions) {
-    exceptions.forEach(ExceptionClass => {
-      const exceptionInstance = new ExceptionClass();
-      decorators.push(
-        ApiResponse({
-          status: exceptionInstance.getStatus(),
-          type: ExceptionClass,
-        }),
-      );
-    });
+  if (auth) {
+    decorators.push(UseGuards(JwtAuthGuard), ApiBearerAuth());
+  }
+
+  return applyDecorators(...decorators);
+}
+
+export function RestApiPost<T extends new (...args: any[]) => any>(response: T, { path, description, auth }: HttpMethodOption): MethodDecorator {
+  const decorators = [
+    Post(path),
+    ApiOperation({ summary: description }),
+    ApiOkResponse({
+      type: response,
+    }),
+  ];
+
+  if (auth) {
+    decorators.push(UseGuards(JwtAuthGuard), ApiBearerAuth());
   }
 
   return applyDecorators(...decorators);
 }
 
 export const Auths = Reflector.createDecorator<string[]>();
-export const Roles = Reflector.createDecorator<string[]>();
