@@ -8,6 +8,6 @@ export class UserController {
 
   @RestApiGet(String, { path: '/me', description: '내 정보 조회', auth: [USER_TYPE.CLIENT] })
   getHello(): Promise<User> {
-    return this.userService.getUser(1);
+    return this.userService.getUserById(1);
   }
 }

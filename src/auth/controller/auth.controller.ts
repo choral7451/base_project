@@ -15,8 +15,8 @@ export class AuthController {
     await this.authService.signup(request.toCommand());
   }
 
-  @RestApiPost(LoginResponse, { path: '/login', description: '로그인' })
-  async login(@Body() request: LoginRequest) {
+  @RestApiPost(LoginResponse, { path: '/login/email', description: '로그인' })
+  async loginByEmail(@Body() request: LoginRequest) {
     const auth = await this.authService.emailLogin(request.toCommand());
 
     return new LoginResponse(auth);

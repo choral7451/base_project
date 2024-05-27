@@ -30,19 +30,19 @@ export class Auth extends BaseEntity {
   @Column({ name: 'access_token' })
   accessToken: string;
 
-  @Column({ type: 'timestamptz', name: 'access_token_expires_in' })
+  @Column({ type: 'timestamp', name: 'access_token_expires_in' })
   accessTokenExpiresIn: Date;
 
   @Column({ name: 'refresh_token' })
   refreshToken: string;
 
-  @Column({ type: 'timestamptz', name: 'refresh_token_expires_in' })
+  @Column({ type: 'timestamp', name: 'refresh_token_expires_in' })
   refreshTokenExpiresIn: Date;
 
-  @CreateDateColumn({ type: 'timestamptz', name: 'created_at' })
+  @CreateDateColumn({ type: 'timestamp', name: 'created_at' })
   createdAt: Date;
 
-  @UpdateDateColumn({ type: 'timestamptz', name: 'updated_at' })
+  @UpdateDateColumn({ type: 'timestamp', name: 'updated_at' })
   updateAt: Date;
 
   constructor(creator: AuthCreator) {
